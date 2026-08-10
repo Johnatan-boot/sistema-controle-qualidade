@@ -1,0 +1,11 @@
+export const qualitySchema = {
+  params: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'integer',
+      },
+    },
+    required: ['id'],
+  },
+};

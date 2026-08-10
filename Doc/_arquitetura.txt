@@ -1,0 +1,122 @@
+controle-qualidade/
+│
+├── frontend/
+│   │
+│   ├── src/
+│   │   ├── assets/
+│   │   │
+│   │   ├── components/
+│   │   │   ├── Header/
+│   │   │   ├── QualityTier/
+│   │   │   ├── KpiCard/
+│   │   │   ├── QualityToolbar/
+│   │   │   ├── QualityTable/
+│   │   │   ├── StatusBadge/
+│   │   │   ├── ProductAutocomplete/
+│   │   │   ├── QualityModal/
+│   │   │   └── EmptyState/
+│   │   │
+│   │   ├── pages/
+│   │   │   └── QualityDashboard/
+│   │   │
+│   │   ├── services/
+│   │   │   ├── api.ts
+│   │   │   ├── qualityRecordsApi.ts
+│   │   │   ├── productsApi.ts
+│   │   │   └── catalogApi.ts
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useQualityRecords.ts
+│   │   │   ├── useProducts.ts
+│   │   │   └── useQualityStats.ts
+│   │   │
+│   │   ├── types/
+│   │   │   ├── quality.ts
+│   │   │   ├── product.ts
+│   │   │   └── catalog.ts
+│   │   │
+│   │   ├── styles/
+│   │   │   ├── variables.css
+│   │   │   ├── global.css
+│   │   │   ├── dashboard.css
+│   │   │   ├── kpi.css
+│   │   │   ├── table.css
+│   │   │   └── modal.css
+│   │   │
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   │
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── backend/
+│   │
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── env.ts
+│   │   │   └── database.ts
+│   │   │
+│   │   ├── modules/
+│   │   │   ├── quality-records/
+│   │   │   │   ├── quality-records.controller.ts
+│   │   │   │   ├── quality-records.service.ts
+│   │   │   │   ├── quality-records.repository.ts
+│   │   │   │   ├── quality-records.routes.ts
+│   │   │   │   └── quality-records.schema.ts
+│   │   │   │
+│   │   │   ├── products/
+│   │   │   ├── sectors/
+│   │   │   ├── statuses/
+│   │   │   └── divergences/
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── errors/
+│   │   │   └── utils/
+│   │   │
+│   │   ├── app.ts
+│   │   └── server.ts
+│   │
+│   ├── migrations/
+│   ├── seeds/
+│   ├── .env
+│   └── package.json
+│
+├── database/
+│   ├── schema.sql
+│   ├── seed.sql
+│   └── README.md
+│
+└── README.md
+
+
+
+
+18. API que vamos construir
+Registros
+GET    /api/quality-records
+GET    /api/quality-records/:id
+POST   /api/quality-records
+PUT    /api/quality-records/:id
+DELETE /api/quality-records/:id
+Estatísticas
+GET /api/quality-records/stats
+
+Retorno:
+
+{
+  "total": 42,
+  "pending": 8,
+  "waiting": 0,
+  "corrected": 34,
+  "qualityPercentage": 81,
+  "tier": "OURO"
+}
+Produtos
+GET /api/products
+GET /api/products/search?q=088X188
+GET /api/products/:id
+Catálogos
+GET /api/sectors
+GET /api/statuses
+GET /api/divergences
+GET /api/suppliers

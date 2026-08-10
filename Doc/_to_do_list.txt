@@ -1,0 +1,65 @@
+22. Ordem correta de desenvolvimento
+
+Não vamos sair fazendo React primeiro.
+
+Vamos fazer nessa ordem:
+
+FASE 1 — Banco
+01. Criar database
+02. Criar tabelas
+03. Criar relacionamentos
+04. Inserir setores
+05. Inserir status
+06. Inserir divergências
+07. Inserir fornecedores
+08. Migrar PRODUCTS
+09. Migrar SEED_RECORDS
+FASE 2 — Fastify
+10. Criar projeto
+11. Configurar TypeScript
+12. Configurar Fastify
+13. Configurar MySQL
+14. Criar repositories
+15. Criar services
+16. Criar controllers
+17. Criar routes
+18. Validação
+19. CRUD
+20. Estatísticas
+21. Busca de produtos
+22. Exportação CSV
+FASE 3 — React
+23. Criar Vite
+24. Copiar identidade visual
+25. Criar layout
+26. Header
+27. Quality Tier
+28. KPI Cards
+29. Toolbar
+30. Table
+31. Modal
+32. Autocomplete
+33. Empty State
+FASE 4 — Integração
+34. React → Fastify
+35. GET registros
+36. POST registro
+37. PUT registro
+38. DELETE registro
+39. GET produtos
+40. filtros
+41. estatísticas
+42. CSV
+FASE 5 — Testes
+43. Criar registro
+44. Editar
+45. Excluir
+46. Buscar SKU
+47. Buscar descrição
+48. Filtrar setor
+49. Filtrar status
+50. Filtrar divergência
+51. Exportar CSV
+52. Atualizar KPI
+53. Atualizar qualidade
+54. Testar responsividade
