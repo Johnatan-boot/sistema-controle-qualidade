@@ -1,7 +1,7 @@
 import app from './app';
 import { testDatabaseConnection } from './config/database';
 
-const PORT = Number(process.env.PORT) || 3333;
+const PORT = Number(process.env.PORT) || 3000;
 
 async function startServer() {
   try {
@@ -19,7 +19,7 @@ async function startServer() {
     });
 
     console.log('🚀 Backend iniciado com sucesso!');
-    console.log(`🌐 http://localhost:${PORT}`);
+    console.log(`🌐 API disponível na porta ${PORT}`);
   } catch (error) {
     console.error('❌ Falha ao iniciar o backend:');
 

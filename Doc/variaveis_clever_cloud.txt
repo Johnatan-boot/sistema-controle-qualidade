@@ -1,17 +1,3 @@
-NODE_ENV=development
-
-PORT=3333
-HOST=0.0.0.0
-
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=qualidade_db
-
-CORS_ORIGIN=http://localhost:5173
-
-
 MYSQL_ADDON_HOST=bxuyolh1jafi5ocgsbse-mysql.services.clever-cloud.com
 MYSQL_ADDON_DB=bxuyolh1jafi5ocgsbse
 MYSQL_ADDON_USER=ujct0vuh3swwmylv
