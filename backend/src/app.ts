@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 
 // ROTAS
 import { qualityRoutes } from './modules/quality/quality.routes';
+import { catalogsRoutes } from './modules/catalogs/catalogs.routes';
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
@@ -18,6 +19,11 @@ export function buildApp(): FastifyInstance {
 
   // Rotas de Qualidade
   app.register(qualityRoutes, {
+    prefix: '/api',
+  });
+
+  // Catálogos
+  app.register(catalogsRoutes, {
     prefix: '/api',
   });
 
