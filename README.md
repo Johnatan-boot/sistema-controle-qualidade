@@ -285,6 +285,10 @@ updated_at
 
 ---
 
+
+<img width="905" height="654" alt="Captura de tela 2026-08-11 174342" src="https://github.com/user-attachments/assets/3da7e460-8e78-450d-bf56-6620e43a2c68" />
+
+
 # 🔌 API REST
 
 Base URL:
