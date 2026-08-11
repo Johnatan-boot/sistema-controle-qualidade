@@ -1,4 +1,10 @@
-Claro. Vou montar um `README.md` já alinhado com o estado atual do projeto: **frontend + backend Fastify/TypeScript + MySQL no Clever Cloud + backend publicado no Render**, deixando claro que o frontend está em construção.
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173313" src="https://github.com/user-attachments/assets/9e095098-39bd-461f-802d-091b3b883171" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173305" src="https://github.com/user-attachments/assets/235594ff-19e4-4e60-908b-a1f81c435396" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173255" src="https://github.com/user-attachments/assets/a0eb2bc8-8473-4d06-9928-80a63b1f757a" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173245" src="https://github.com/user-attachments/assets/b94fd6e0-30e1-48e8-b1a0-7c239ced1bb7" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173234" src="https://github.com/user-attachments/assets/20f6557e-490a-4172-9df9-bbacdce4dff2" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173224" src="https://github.com/user-attachments/assets/46ed8e5b-b344-4d6b-b0c8-4901c0cc96da" />
+<img width="1440" height="900" alt="Captura de tela 2026-08-11 173120" src="https://github.com/user-attachments/assets/63cb276d-fd80-4219-b822-798bbded482a" />
 
 # 🚀 Sistema de Controle de Qualidade
 
