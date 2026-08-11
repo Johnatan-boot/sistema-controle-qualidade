@@ -1,28 +1,30 @@
 {
+   
    "name": "controle-qualidade-backend",
-  "version": "1.0.0",
-  "description": "API de gestão de checklist e qualidade",
-  "main": "dist/server.js",
-  "scripts": {
-  "dev": "tsx watch src/server.ts",
-  "build": "tsc",
-  "start": "node dist/server.js",
-  "typecheck": "tsc --noEmit"
-},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "@fastify/cors": "^11.3.0",
-    "@fastify/multipart": "^10.1.0",
-    "dotenv": "^17.4.2",
-    "fastify": "^5.11.3",
-    "mysql2": "^3.23.3"
-  },
-  "devDependencies": {
-    "@types/node": "^26.2.0",
-    "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
-  }
+   "version": "1.0.0",
+   "description": "API de gestão de checklist e qualidade",
+   "main": "dist/server.js",
+   "scripts": {
+      "dev": "tsx watch src/server.ts",
+      "build": "tsc",
+      "start": "node dist/server.js",
+      "typecheck": "tsc --noEmit",
+      "db:init": "tsx database/init-db.ts"
+   },
+   "keywords": [],
+   "author": "",
+   "license": "ISC",
+   "type": "commonjs",
+   "dependencies": {
+      "@fastify/cors": "^11.3.0",
+      "@fastify/multipart": "^10.1.0",
+      "dotenv": "^17.4.2",
+      "fastify": "^5.11.3",
+      "mysql2": "^3.23.3"
+   },
+   "devDependencies": {
+      "@types/node": "^26.2.0",
+      "tsx": "^4.23.12",
+      "typescript": "^7.0.2"
+   }
 }
