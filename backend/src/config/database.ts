@@ -4,12 +4,32 @@ import mysql, {
   RowDataPacket,
 } from 'mysql2/promise';
 
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Variável de ambiente obrigatória não configurada: ${name}`);
+  }
+
+  return value;
+}
+
+const DB_HOST = getRequiredEnv('DB_HOST');
+const DB_USER = getRequiredEnv('DB_USER');
+const DB_PASSWORD = getRequiredEnv('DB_PASSWORD');
+const DB_NAME = getRequiredEnv('DB_NAME');
+const DB_PORT = Number(process.env.DB_PORT ?? 3306);
+
+if (Number.isNaN(DB_PORT)) {
+  throw new Error('DB_PORT precisa ser um número válido.');
+}
+
 const pool: Pool = mysql.createPool({
-  host: process.env.DB_HOST ?? 'localhost',
-  port: Number(process.env.DB_PORT ?? 3306),
-  user: process.env.DB_USER ?? 'root',
-  password: process.env.DB_PASSWORD ?? '',
-  database: process.env.DB_NAME ?? 'qualidade_db',
+  host: DB_HOST,
+  port: DB_PORT,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
 
   waitForConnections: true,
   connectionLimit: 10,
@@ -46,14 +66,13 @@ export async function testDatabaseConnection(): Promise<{
     const qualityRecords = Number(rows[0]?.total ?? 0);
 
     return {
-      database: process.env.DB_NAME ?? 'qualidade_db',
-      host: process.env.DB_HOST ?? 'localhost',
-      port: Number(process.env.DB_PORT ?? 3306),
+      database: DB_NAME,
+      host: DB_HOST,
+      port: DB_PORT,
       qualityRecords,
     };
   } catch (error) {
     console.error('❌ Erro ao conectar ao MySQL:', error);
-
     throw error;
   } finally {
     connection?.release();

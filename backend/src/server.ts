@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import app from './app';
 import { testDatabaseConnection } from './config/database';
 
@@ -34,3 +35,4 @@ async function startServer() {
 }
 
 startServer();
+
