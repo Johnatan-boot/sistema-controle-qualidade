@@ -26,8 +26,9 @@ export async function runAutoSeedIfNeeded(): Promise<void> {
     console.log('⚠️ Banco vazio detectado! Iniciando população automática dos dados...');
 
     // Caminho para o seu arquivo SQL de seed ou schema
-    const schemaPath = path.resolve(process.cwd(), 'database', 'schema.sql');
-    const seedPath = path.resolve(process.cwd(), 'database', 'seed.sql');
+    // Altere de 'database' para 'src/database'
+    const schemaPath = path.resolve(process.cwd(), 'src', 'database', 'schema.sql');
+    const seedPath = path.resolve(process.cwd(), 'src', 'database', 'seed.sql');
 
     // Executa o schema primeiro (se necessário) e depois o seed
     try {
