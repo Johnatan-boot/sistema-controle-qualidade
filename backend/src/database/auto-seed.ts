@@ -1,42 +1,78 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { pool } from '../config/database';
-import { RowDataPacket } from 'mysql2';
+import mysql, { RowDataPacket } from 'mysql2/promise';
 
 interface ProductCountResult extends RowDataPacket {
   total: number;
 }
 
+// Ordem de execução importa: catalogos -> products -> quality_records -> verificacao
+const SEED_FILES = [
+  '01_catalogos.sql',
+  '02_products.sql',
+  '03_quality_records.sql',
+  '04_verificacao.sql',
+];
+
+/**
+ * Executa os arquivos de seed (já organizados em 01/02/03/04) na ordem certa.
+ * Cada arquivo é enviado inteiro ao MySQL numa conexão com
+ * `multipleStatements: true`, então comentários (--) e múltiplos comandos
+ * dentro do mesmo arquivo são tratados corretamente pelo próprio driver
+ * (nada de split manual por ';').
+ */
 export async function runAutoSeedIfNeeded(): Promise<void> {
-  const connection = await pool.getConnection();
+  const host = process.env.DB_HOST;
+  const port = Number(process.env.DB_PORT || 3306);
+  const user = process.env.DB_USER;
+  const password = process.env.DB_PASSWORD;
+  const database = process.env.DB_NAME;
+
+  if (!host || !user || !password || !database) {
+    throw new Error(
+      'Variáveis DB_HOST, DB_USER, DB_PASSWORD e DB_NAME são obrigatórias.'
+    );
+  }
+
+  const seedConnection = await mysql.createConnection({
+    host,
+    port,
+    user,
+    password,
+    database,
+    multipleStatements: true,
+    charset: 'utf8mb4',
+  });
 
   try {
-    const [rows] = await connection.query<ProductCountResult[]>(
+    const [rows] = await seedConnection.query<ProductCountResult[]>(
       `SELECT COUNT(*) AS total FROM products`
     );
+    const totalProducts = Number(rows[0]?.total ?? 0);
 
-    if (Number(rows[0]?.total ?? 0) > 0) return;
-
-    console.log('⚠️ Banco vazio! Populando...');
-
-    const seedPath = path.resolve(process.cwd(), 'src', 'database', 'seed.sql');
-    const seedSql = await fs.readFile(seedPath, 'utf8');
-
-    // Divide o script SQL em comandos individuais separados por ponto-e-vírgula,
-    // ignorando comentários e linhas em branco.
-    const queries = seedSql
-      .split(';')
-      .map((q) => q.trim())
-      .filter((q) => q.length > 0 && !q.startsWith('--'));
-
-    for (const query of queries) {
-      await connection.query(query);
+    if (totalProducts > 0) {
+      console.log(`🟢 Banco já populado (${totalProducts} produtos encontrados). Seed ignorado.`);
+      return;
     }
-    
-    console.log('🚀 Banco populado com sucesso!');
+
+    console.log('⚠️ Banco vazio detectado! Iniciando população automática dos dados...');
+
+    // Pasta onde os 4 arquivos .sql ficam (ajuste se sua estrutura for diferente)
+    const seedDir = path.resolve(process.cwd(), 'src', 'database', 'seed');
+
+    for (const fileName of SEED_FILES) {
+      const filePath = path.join(seedDir, fileName);
+      const sql = await fs.readFile(filePath, 'utf8');
+      console.log(`   -> executando ${fileName} ...`);
+      await seedConnection.query(sql);
+      console.log(`   ✅ ${fileName} concluído`);
+    }
+
+    console.log('🚀 Banco populado com sucesso automaticamente!');
   } catch (error) {
-    console.error('❌ Erro no seed:', error);
+    console.error('❌ Erro durante o auto-seed:', error);
+    throw error;
   } finally {
-    connection.release();
+    await seedConnection.end();
   }
 }
