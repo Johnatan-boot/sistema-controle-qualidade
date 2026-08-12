@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { pool } from '../config/database';
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2';
 
 interface ProductCountResult extends RowDataPacket {
   total: number;
@@ -19,15 +19,21 @@ export async function runAutoSeedIfNeeded(): Promise<void> {
 
     console.log('⚠️ Banco vazio! Populando...');
 
-    // Apenas leia o arquivo de seed (que agora está limpo)
     const seedPath = path.resolve(process.cwd(), 'src', 'database', 'seed.sql');
     const seedSql = await fs.readFile(seedPath, 'utf8');
 
-    // Executa o seed. Se for grande demais, o ideal é dividir, 
-    // mas vamos tentar rodar direto sem o USE/START TRANSACTION
-    await connection.query(seedSql);
+    // Divide o script SQL em comandos individuais separados por ponto-e-vírgula,
+    // ignorando comentários e linhas em branco.
+    const queries = seedSql
+      .split(';')
+      .map((q) => q.trim())
+      .filter((q) => q.length > 0 && !q.startsWith('--'));
+
+    for (const query of queries) {
+      await connection.query(query);
+    }
     
-    console.log('🚀 Banco populado!');
+    console.log('🚀 Banco populado com sucesso!');
   } catch (error) {
     console.error('❌ Erro no seed:', error);
   } finally {
