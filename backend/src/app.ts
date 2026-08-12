@@ -3,6 +3,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 // ROTAS
 import { qualityRoutes } from './modules/quality/quality.routes';
 import { catalogsRoutes } from './modules/catalogs/catalogs.routes';
+import { adminRoutes } from './modules/admin/admin.routes';
 
 export function buildApp(): FastifyInstance {
   const app = Fastify({
@@ -26,6 +27,10 @@ export function buildApp(): FastifyInstance {
   app.register(catalogsRoutes, {
     prefix: '/api',
   });
+  
+  app.register(adminRoutes, {
+  prefix: '/api',
+});
 
   return app;
 }

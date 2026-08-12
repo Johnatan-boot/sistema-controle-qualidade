@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import app from './app';
 import { testDatabaseConnection } from './config/database';
+import { runAutoSeedIfNeeded } from './database/auto-seed'; // <-- Importe aqui
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -13,6 +14,9 @@ async function startServer() {
     console.log(`🖥️ Host: ${database.host}`);
     console.log(`🔌 Porta: ${database.port}`);
     console.log(`📋 Registros de qualidade: ${database.qualityRecords}`);
+
+    // 👉 Executa o seed automático caso o banco esteja vazio
+    await runAutoSeedIfNeeded();
 
     await app.listen({
       port: PORT,
@@ -35,4 +39,3 @@ async function startServer() {
 }
 
 startServer();
-

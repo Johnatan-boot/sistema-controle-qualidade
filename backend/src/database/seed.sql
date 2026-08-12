@@ -3,7 +3,7 @@
 -- Produtos na fonte: 17120 (2 duplicados por SKU foram ignorados com INSERT IGNORE)
 -- Registros iniciais: 42
 
-USE qualidade_db;
+USE bxuyolh1jafi5ocgsbse;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 1;
 START TRANSACTION;
