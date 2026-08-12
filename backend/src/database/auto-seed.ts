@@ -57,8 +57,8 @@ export async function runAutoSeedIfNeeded(): Promise<void> {
 
     console.log('⚠️ Banco vazio detectado! Iniciando população automática dos dados...');
 
-    // Pasta onde os 4 arquivos .sql ficam (ajuste se sua estrutura for diferente)
-    const seedDir = path.resolve(process.cwd(), 'src', 'database', 'seed');
+    // Pasta onde os 4 arquivos .sql realmente estão no repositório
+    const seedDir = path.resolve(process.cwd(), 'src', 'database', 'migrations', 'seeds');
 
     for (const fileName of SEED_FILES) {
       const filePath = path.join(seedDir, fileName);
