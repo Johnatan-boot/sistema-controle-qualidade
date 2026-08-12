@@ -3,10 +3,7 @@
 -- Produtos na fonte: 17120 (2 duplicados por SKU foram ignorados com INSERT IGNORE)
 -- Registros iniciais: 42
 
-USE bxuyolh1jafi5ocgsbse;
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 1;
-START TRANSACTION;
+
 
 -- 1. SETORES
 INSERT INTO sectors (id, name, active) VALUES
@@ -17369,7 +17366,6 @@ INSERT INTO quality_records (id, sector_id, status_id, divergence_type_id, produ
 INSERT INTO quality_records (id, sector_id, status_id, divergence_type_id, product_id, supplier_id, quantity, observation, correction_action, observation_date, correction_date, responsible) VALUES (41, (SELECT id FROM sectors WHERE name='EXPEDIÇÃO' LIMIT 1), (SELECT id FROM statuses WHERE name='CORRIGIDO' LIMIT 1), (SELECT id FROM divergence_types WHERE code=5 LIMIT 1), (SELECT id FROM products WHERE sku='CMP193X203X28ECUSXCOLBUEVIB' LIMIT 1), (SELECT id FROM suppliers WHERE name='ECUS DO BRASIL IMPOR' LIMIT 1), 1.0, 'EMBALAGEM ABERTA', NULL, '2026-08-03', '2026-08-03', 'JOAO') ON DUPLICATE KEY UPDATE sector_id=VALUES(sector_id), status_id=VALUES(status_id), divergence_type_id=VALUES(divergence_type_id), product_id=VALUES(product_id), supplier_id=VALUES(supplier_id), quantity=VALUES(quantity), observation=VALUES(observation), correction_action=VALUES(correction_action), observation_date=VALUES(observation_date), correction_date=VALUES(correction_date), responsible=VALUES(responsible);
 INSERT INTO quality_records (id, sector_id, status_id, divergence_type_id, product_id, supplier_id, quantity, observation, correction_action, observation_date, correction_date, responsible) VALUES (42, (SELECT id FROM sectors WHERE name='EXPEDIÇÃO' LIMIT 1), (SELECT id FROM statuses WHERE name='CORRIGIDO' LIMIT 1), (SELECT id FROM divergence_types WHERE code=12 LIMIT 1), (SELECT id FROM products WHERE sku='BUP079X198X38AFVJOYVELXALUCAVA' LIMIT 1), (SELECT id FROM suppliers WHERE name='V-JOY MOVEIS E COLCH' LIMIT 1), 1.0, 'ETIQUETA DUPLICADA', NULL, '2026-08-03', '2026-08-03', 'JOAO') ON DUPLICATE KEY UPDATE sector_id=VALUES(sector_id), status_id=VALUES(status_id), divergence_type_id=VALUES(divergence_type_id), product_id=VALUES(product_id), supplier_id=VALUES(supplier_id), quantity=VALUES(quantity), observation=VALUES(observation), correction_action=VALUES(correction_action), observation_date=VALUES(observation_date), correction_date=VALUES(correction_date), responsible=VALUES(responsible);
 
-COMMIT;
 
 -- Verificacao rapida
 SELECT COUNT(*) AS setores FROM sectors;
