@@ -26,23 +26,34 @@ export async function findAll(): Promise<QualityRecord[]> {
   const [rows] = await pool.query<QualityRecordRow[]>(
     `
       SELECT
-        id,
-        sector_id,
-        status_id,
-        divergence_type_id,
-        product_id,
-        supplier_id,
-        quantity,
-        observation,
-        correction_action,
-        observation_date,
-        correction_date,
-        responsible,
-        created_at,
-        updated_at
-      FROM quality_records
-      ORDER BY id DESC
-    `,
+        qr.id,
+        qr.quantity,
+        qr.observation,
+        qr.correction_action,
+        qr.observation_date,
+        qr.correction_date,
+        qr.responsible,
+        qr.created_at,
+        qr.updated_at,
+        -- IDs originais mantidos caso o front precise
+        qr.sector_id,
+        qr.status_id,
+        qr.divergence_type_id,
+        qr.product_id,
+        qr.supplier_id,
+        -- Nomes resolvidos para exibição direta na tabela
+        s.name AS sector_name,
+        st.name AS status_name,
+        dt.name AS divergence_type_name,
+        p.name AS product_name,
+        p.sku AS product_sku
+      FROM quality_records qr
+      LEFT JOIN sectors s ON qr.sector_id = s.id
+      LEFT JOIN statuses st ON qr.status_id = st.id
+      LEFT JOIN divergence_types dt ON qr.divergence_type_id = dt.id
+      LEFT JOIN products p ON qr.product_id = p.id
+      ORDER BY qr.id DESC
+    `
   );
 
   return rows;
@@ -57,22 +68,31 @@ export async function findById(
   const [rows] = await pool.query<QualityRecordRow[]>(
     `
       SELECT
-        id,
-        sector_id,
-        status_id,
-        divergence_type_id,
-        product_id,
-        supplier_id,
-        quantity,
-        observation,
-        correction_action,
-        observation_date,
-        correction_date,
-        responsible,
-        created_at,
-        updated_at
-      FROM quality_records
-      WHERE id = ?
+        qr.id,
+        qr.quantity,
+        qr.observation,
+        qr.correction_action,
+        qr.observation_date,
+        qr.correction_date,
+        qr.responsible,
+        qr.created_at,
+        qr.updated_at,
+        qr.sector_id,
+        qr.status_id,
+        qr.divergence_type_id,
+        qr.product_id,
+        qr.supplier_id,
+        s.name AS sector_name,
+        st.name AS status_name,
+        dt.name AS divergence_type_name,
+        p.name AS product_name,
+        p.sku AS product_sku
+      FROM quality_records qr
+      LEFT JOIN sectors s ON qr.sector_id = s.id
+      LEFT JOIN statuses st ON qr.status_id = st.id
+      LEFT JOIN divergence_types dt ON qr.divergence_type_id = dt.id
+      LEFT JOIN products p ON qr.product_id = p.id
+      WHERE qr.id = ?
       LIMIT 1
     `,
     [id],

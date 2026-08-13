@@ -13,6 +13,12 @@ export interface QualityRecord {
   responsible: string | null;
   created_at: Date;
   updated_at: Date;
+  // Novos campos vindos dos JOINs
+  sector_name?: string;
+  status_name?: string;
+  divergence_type_name?: string;
+  product_name?: string;
+  product_sku?: string;
 }
 
 export interface CreateQualityRecordDTO {

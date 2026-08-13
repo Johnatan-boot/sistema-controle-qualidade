@@ -1,0 +1,252 @@
+From 0f1cbb898ae942ec3cc39fc037bd8d040eebc626 Mon Sep 17 00:00:00 2001
+From: dev <dev@local>
+Date: Wed, 12 Aug 2026 20:19:18 +0000
+Subject: [PATCH] fix: registra CORS no Fastify e corrige caminho da pasta de
+ seed (migrations/seeds)
+
+- app.ts nunca chamava app.register(cors,...) apesar do pacote @fastify/cors
+  estar instalado, por isso o navegador bloqueava toda chamada do frontend
+  (No 'Access-Control-Allow-Origin' header)
+- auto-seed.ts procurava os arquivos em src/database/seed/, mas eles estao
+  em src/database/migrations/seeds/, entao o seed nunca rodava e o boot
+  provavelmente falhava
+---
+ backend/src/app.ts                | 100 +++++++++++++++----------
+ backend/src/database/auto-seed.ts | 118 +++++++++++++++++++-----------
+ 2 files changed, 140 insertions(+), 78 deletions(-)
+
+diff --git a/backend/src/app.ts b/backend/src/app.ts
+index b2b2715..de76b20 100644
+--- a/backend/src/app.ts
++++ b/backend/src/app.ts
+@@ -1,38 +1,64 @@
+-import Fastify, { FastifyInstance } from 'fastify';
+-
+-// ROTAS
+-import { qualityRoutes } from './modules/quality/quality.routes';
+-import { catalogsRoutes } from './modules/catalogs/catalogs.routes';
+-import { adminRoutes } from './modules/admin/admin.routes';
+-
+-export function buildApp(): FastifyInstance {
+-  const app = Fastify({
+-    logger: true,
+-  });
+-
+-  // Health Check
+-  app.get('/health', async () => {
+-    return {
+-      status: 'ok',
+-      message: 'Backend Controle de Qualidade funcionando!',
+-    };
+-  });
+-
+-  // Rotas de Qualidade
+-  app.register(qualityRoutes, {
+-    prefix: '/api',
+-  });
+-
+-  // Catálogos
+-  app.register(catalogsRoutes, {
+-    prefix: '/api',
+-  });
+-  
+-  app.register(adminRoutes, {
+-  prefix: '/api',
+-});
+-
+-  return app;
+-}
+-
++import Fastify, { FastifyInstance } from 'fastify';
++import cors from '@fastify/cors';
++
++// ROTAS
++import { qualityRoutes } from './modules/quality/quality.routes';
++import { catalogsRoutes } from './modules/catalogs/catalogs.routes';
++import { adminRoutes } from './modules/admin/admin.routes';
++
++export function buildApp(): FastifyInstance {
++  const app = Fastify({
++    logger: true,
++  });
++
++  // CORS - permite o frontend chamar a API
++  // Defina CORS_ORIGIN no Render como a URL exata do frontend
++  // (ex: https://sistema-controle-qualidade-frontend.onrender.com)
++  // Pode listar mais de uma origem separada por vírgula.
++  const allowedOrigins = (process.env.CORS_ORIGIN || '')
++    .split(',')
++    .map((o) => o.trim())
++    .filter(Boolean);
++
++  app.register(cors, {
++    origin: (origin, cb) => {
++      // requisições sem origin (ex: curl, health check) sempre passam
++      if (!origin) return cb(null, true);
++
++      // fallback: aceita qualquer subdomínio *.onrender.com se nada foi configurado,
++      // pra não travar o deploy enquanto a env var não estiver setada
++      if (allowedOrigins.length === 0) {
++        return cb(null, /\.onrender\.com$/.test(new URL(origin).hostname));
++      }
++
++      return cb(null, allowedOrigins.includes(origin));
++    },
++    credentials: true,
++  });
++
++  // Health Check
++  app.get('/health', async () => {
++    return {
++      status: 'ok',
++      message: 'Backend Controle de Qualidade funcionando!',
++    };
++  });
++
++  // Rotas de Qualidade
++  app.register(qualityRoutes, {
++    prefix: '/api',
++  });
++
++  // Catálogos
++  app.register(catalogsRoutes, {
++    prefix: '/api',
++  });
++  
++  app.register(adminRoutes, {
++  prefix: '/api',
++});
++
++  return app;
++}
++
+ export default buildApp();
+\ No newline at end of file
+diff --git a/backend/src/database/auto-seed.ts b/backend/src/database/auto-seed.ts
+index 8a8da25..5bbf035 100644
+--- a/backend/src/database/auto-seed.ts
++++ b/backend/src/database/auto-seed.ts
+@@ -1,42 +1,78 @@
+-import fs from 'fs/promises';
+-import path from 'path';
+-import { pool } from '../config/database';
+-import { RowDataPacket } from 'mysql2';
+-
+-interface ProductCountResult extends RowDataPacket {
+-  total: number;
+-}
+-
+-export async function runAutoSeedIfNeeded(): Promise<void> {
+-  const connection = await pool.getConnection();
+-
+-  try {
+-    const [rows] = await connection.query<ProductCountResult[]>(
+-      `SELECT COUNT(*) AS total FROM products`
+-    );
+-
+-    if (Number(rows[0]?.total ?? 0) > 0) return;
+-
+-    console.log('⚠️ Banco vazio! Populando...');
+-
+-    const seedPath = path.resolve(process.cwd(), 'src', 'database', 'seed.sql');
+-    const seedSql = await fs.readFile(seedPath, 'utf8');
+-
+-    // Divide o script SQL em comandos individuais separados por ponto-e-vírgula,
+-    // ignorando comentários e linhas em branco.
+-    const queries = seedSql
+-      .split(';')
+-      .map((q) => q.trim())
+-      .filter((q) => q.length > 0 && !q.startsWith('--'));
+-
+-    for (const query of queries) {
+-      await connection.query(query);
+-    }
+-    
+-    console.log('🚀 Banco populado com sucesso!');
+-  } catch (error) {
+-    console.error('❌ Erro no seed:', error);
+-  } finally {
+-    connection.release();
+-  }
++import fs from 'fs/promises';
++import path from 'path';
++import mysql, { RowDataPacket } from 'mysql2/promise';
++
++interface ProductCountResult extends RowDataPacket {
++  total: number;
++}
++
++// Ordem de execução importa: catalogos -> products -> quality_records -> verificacao
++const SEED_FILES = [
++  '01_catalogos.sql',
++  '02_products.sql',
++  '03_quality_records.sql',
++  '04_verificacao.sql',
++];
++
++/**
++ * Executa os arquivos de seed (já organizados em 01/02/03/04) na ordem certa.
++ * Cada arquivo é enviado inteiro ao MySQL numa conexão com
++ * `multipleStatements: true`, então comentários (--) e múltiplos comandos
++ * dentro do mesmo arquivo são tratados corretamente pelo próprio driver
++ * (nada de split manual por ';').
++ */
++export async function runAutoSeedIfNeeded(): Promise<void> {
++  const host = process.env.DB_HOST;
++  const port = Number(process.env.DB_PORT || 3306);
++  const user = process.env.DB_USER;
++  const password = process.env.DB_PASSWORD;
++  const database = process.env.DB_NAME;
++
++  if (!host || !user || !password || !database) {
++    throw new Error(
++      'Variáveis DB_HOST, DB_USER, DB_PASSWORD e DB_NAME são obrigatórias.'
++    );
++  }
++
++  const seedConnection = await mysql.createConnection({
++    host,
++    port,
++    user,
++    password,
++    database,
++    multipleStatements: true,
++    charset: 'utf8mb4',
++  });
++
++  try {
++    const [rows] = await seedConnection.query<ProductCountResult[]>(
++      `SELECT COUNT(*) AS total FROM products`
++    );
++    const totalProducts = Number(rows[0]?.total ?? 0);
++
++    if (totalProducts > 0) {
++      console.log(`🟢 Banco já populado (${totalProducts} produtos encontrados). Seed ignorado.`);
++      return;
++    }
++
++    console.log('⚠️ Banco vazio detectado! Iniciando população automática dos dados...');
++
++    // Pasta onde os 4 arquivos .sql realmente estão no repositório
++    const seedDir = path.resolve(process.cwd(), 'src', 'database', 'migrations', 'seeds');
++
++    for (const fileName of SEED_FILES) {
++      const filePath = path.join(seedDir, fileName);
++      const sql = await fs.readFile(filePath, 'utf8');
++      console.log(`   -> executando ${fileName} ...`);
++      await seedConnection.query(sql);
++      console.log(`   ✅ ${fileName} concluído`);
++    }
++
++    console.log('🚀 Banco populado com sucesso automaticamente!');
++  } catch (error) {
++    console.error('❌ Erro durante o auto-seed:', error);
++    throw error;
++  } finally {
++    await seedConnection.end();
++  }
+ }
+\ No newline at end of file
+-- 
+2.43.0
+
