@@ -45,7 +45,7 @@ export async function findAll(): Promise<QualityRecord[]> {
         s.name AS sector_name,
         st.name AS status_name,
         dt.name AS divergence_type_name,
-        p.name AS product_name,
+        p.description AS product_name,
         p.sku AS product_sku
       FROM quality_records qr
       LEFT JOIN sectors s ON qr.sector_id = s.id
@@ -85,7 +85,7 @@ export async function findById(
         s.name AS sector_name,
         st.name AS status_name,
         dt.name AS divergence_type_name,
-        p.name AS product_name,
+        p.description AS product_name,
         p.sku AS product_sku
       FROM quality_records qr
       LEFT JOIN sectors s ON qr.sector_id = s.id
