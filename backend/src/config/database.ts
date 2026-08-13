@@ -32,7 +32,7 @@ const pool: Pool = mysql.createPool({
   database: DB_NAME,
 
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 4,
   queueLimit: 0,
 
   charset: 'utf8mb4',
