@@ -15,8 +15,6 @@ const SEED_FILES = [
 ];
 
 // Contagens esperadas depois de um seed completo e bem-sucedido.
-// Se o banco tiver algo diferente disso (ex: sobra de um seed que travou
-// no meio do caminho), consideramos "incompleto" e repopulamos do zero.
 const EXPECTED_PRODUCTS = 17118;
 const EXPECTED_QUALITY_RECORDS = 42;
 
@@ -28,6 +26,56 @@ const TABLES_TO_RESET = [
   'statuses',
   'sectors',
 ] as const;
+
+function isConnectionLimitError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: string }).code === 'ER_USER_LIMIT_REACHED'
+  );
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function createSeedConnection(config: {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+}): Promise<mysql.Connection> {
+  const attempts = 5;
+  const baseDelayMs = 2000;
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await mysql.createConnection({
+        ...config,
+        multipleStatements: true,
+        charset: 'utf8mb4',
+      });
+    } catch (error) {
+      lastError = error;
+
+      if (!isConnectionLimitError(error) || attempt === attempts) {
+        throw error;
+      }
+
+      const delay = baseDelayMs * attempt;
+      console.warn(
+        `⚠️ Limite de conexões do MySQL atingido ao abrir conexão do seed ` +
+          `(tentativa ${attempt}/${attempts}). Tentando de novo em ${delay}ms...`
+      );
+      await sleep(delay);
+    }
+  }
+
+  throw lastError;
+}
 
 export async function runAutoSeedIfNeeded(): Promise<void> {
   const host = process.env.DB_HOST;
@@ -42,14 +90,12 @@ export async function runAutoSeedIfNeeded(): Promise<void> {
     );
   }
 
-  const seedConnection = await mysql.createConnection({
+  const seedConnection = await createSeedConnection({
     host,
     port,
     user,
     password,
     database,
-    multipleStatements: true,
-    charset: 'utf8mb4',
   });
 
   try {
