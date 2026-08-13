@@ -1,0 +1,96 @@
+-- =====================================================================
+-- 01_CATALOGOS.SQL - SETORES, STATUS, TIPOS DE DIVERGENCIA E FORNECEDORES
+-- =====================================================================
+
+-- 1. SETORES
+INSERT INTO sectors (id, name, active) VALUES
+(1, 'RECEBIMENTO', 1),
+(2, 'VERTICAL', 1),
+(3, 'MERCADO', 1),
+(4, 'EXPEDIÇÃO', 1)
+ON DUPLICATE KEY UPDATE name=VALUES(name), active=VALUES(active);
+
+-- 2. STATUS
+INSERT INTO statuses (id, name, active) VALUES
+(1, 'PENDENTE', 1),
+(2, 'EM ESPERA', 1),
+(3, 'CORRIGIDO', 1)
+ON DUPLICATE KEY UPDATE name=VALUES(name), active=VALUES(active);
+
+-- 3. TIPOS DE DIVERGENCIA
+INSERT INTO divergence_types (code, name, active) VALUES
+(1, 'PALLET QUEBRADO', 1),
+(2, 'PREGO EXPOSTO', 1),
+(3, 'GRAMPO EXPOSTO', 1),
+(4, 'PESINHO SOLTO', 1),
+(5, 'EMBALAGEM NÃO CONFORME', 1),
+(6, 'TECIDO RASGADO', 1),
+(7, 'TECIDO MANCHADO', 1),
+(8, 'PRODUTO ÚMIDO', 1),
+(9, 'ESTRUTURA QUEBRADA', 1),
+(10, 'TECIDO ESGARÇADO', 1),
+(11, 'TONALIDADE DIVERGENTE', 1),
+(12, 'ETIQUETA ADULTERADA', 1),
+(13, 'TNT RASGADO', 1),
+(14, 'GAIOLA NÃO CONFORME', 1),
+(15, 'GAIOLA SEM IDENTIFICAÇÃO', 1),
+(16, 'EMPILHAMENTO INCORRETO', 1),
+(17, 'MANUSEIO INCORRETO', 1),
+(18, 'LOTE NÃO IDENTIFICADO', 1),
+(19, 'OUTROS', 1)
+ON DUPLICATE KEY UPDATE name=VALUES(name), active=VALUES(active);
+
+-- 4. FORNECEDORES
+INSERT INTO suppliers (id, name, active) VALUES
+(1, 'MGA', 1),
+(2, 'ITABOX', 1),
+(3, 'MB-CAB COMERCIO', 1),
+(4, 'CONFECCOES KACYUMARA', 1),
+(5, '#N/A', 1),
+(6, 'V-JOY MOVEIS E COLCH', 1),
+(7, 'PLUMATEX', 1),
+(8, 'FELIS BOX', 1),
+(9, 'MB MOVEIS', 1),
+(10, 'CASA BASICA COMERCIO', 1),
+(11, 'ELEVA', 1),
+(12, 'DREAM BOX', 1),
+(13, 'SERJA MOVEIS', 1),
+(14, 'TECNOBOX', 1),
+(15, 'CRIAZZI', 1),
+(16, 'VPRIME SOLUTIONS LTD', 1),
+(17, 'CRIAZZI PRODUCOES', 1),
+(18, 'ARTBOX', 1),
+(19, 'MANNES', 1),
+(20, 'RONCONI', 1),
+(21, 'ANJOS', 1),
+(22, 'AMERICANFLEX', 1),
+(23, 'LATEX FOAM', 1),
+(24, 'GRUPO DAMASU', 1),
+(25, 'EUROSONO', 1),
+(26, 'UB MOVEIS', 1),
+(27, 'CIA DO MOVEL', 1),
+(28, 'ECUS DO BRASIL IMPOR', 1),
+(29, 'BONAN', 1),
+(30, 'MHC PERES INDUSTRIA', 1),
+(31, 'BASOTO BRASIL', 1),
+(32, 'EBJ CABECEIRAS E BAU', 1),
+(33, 'LUCKSPUMA', 1),
+(34, 'SAO JORGE', 1),
+(35, 'COLCHÕES UMAFLEX', 1),
+(36, 'UMAFLEX', 1),
+(37, 'MONTREAL', 1),
+(38, 'ECUS DO BRASIL', 1),
+(39, 'SANKONFORT COLCHOES', 1),
+(40, 'CBP IND. DO CONFORTO', 1),
+(41, 'ECUS DO BRASIL FABRI', 1),
+(42, 'SEBIAN', 1),
+(43, 'PELMEX DA AMAZONIA', 1),
+(44, 'SERTA', 1),
+(45, 'PERFECTO', 1),
+(46, 'LEGGETT & PLATT DO B', 1),
+(47, 'FRELANZZA', 1),
+(48, 'FIBRASCA', 1),
+(49, 'DDS SOFAS', 1),
+(50, 'GENERAL INJECTION', 1),
+(51, 'BEST PILLOW', 1)
+ON DUPLICATE KEY UPDATE name=VALUES(name), active=VALUES(active);
